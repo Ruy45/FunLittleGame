@@ -1,28 +1,42 @@
 import { List } from "./List.jsx";
+import { MapComponent } from "./components/Map/MapComponent.jsx";
+import { observer, Provider } from "mobx-react";
+import { useStores } from "./stores/RootStore.js";
+import { StartMenu } from "./components/StartMenu/StartMenu.jsx";
+import { Shop } from "./components/Shop/Shop.jsx";
+import { Inventory } from "./components/Inventory/Inventory.jsx";
 
-const fruits = [
-  { id: 1, name: "apple", calories: 95 },
-  { id: 2, name: "orange", calories: 45 },
-  { id: 3, name: "banana", calories: 105 },
-  { id: 4, name: "coconut", calories: 159 },
-  { id: 5, name: "pineapple", calories: 37 },
-];
+export const App = observer(() => {
+  const { currentPage } = useStores();
 
-const vegetables = [
-  { id: 1, name: "potatoes", calories: 110 },
-  { id: 2, name: "celery", calories: 15 },
-  { id: 3, name: "carrots", calories: 25 },
-  { id: 4, name: "corn", calories: 63 },
-  { id: 5, name: "broccoli", calories: 50 },
-];
-
-export const App = () => {
-  return (
-    <>
-      {fruits.length > 0 && <List items={fruits} category="Fruits" />}
-      {vegetables.length > 0 ? (
-        <List items={vegetables} category="Vegetables" />
-      ) : null}
-    </>
-  );
-};
+  switch (currentPage) {
+    case "menu": {
+      return (
+        <Provider value={useStores()}>
+          <StartMenu></StartMenu>
+        </Provider>
+      );
+    }
+    case "game": {
+      return (
+        <Provider value={useStores()}>
+          <MapComponent />
+        </Provider>
+      );
+    }
+    case "shop": {
+      return (
+        <Provider value={useStores()}>
+          <Shop />
+        </Provider>
+      );
+    }
+    case "inventory": {
+      return (
+        <Provider value={useStores()}>
+          <Inventory />
+        </Provider>
+      );
+    }
+  }
+});

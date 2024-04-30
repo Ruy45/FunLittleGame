@@ -1,0 +1,23 @@
+.map-tile {
+  display: flex;
+  width: 30px;
+  height: 30px;
+  align-items: center;
+  justify-content: center;
+
+  &.water {
+    background-color: dodgerblue;
+  }
+
+  &.beach {
+    background-color: yellow;
+  }
+
+  &.grass {
+    background-color: #0f6c0f;
+  }
+
+  &.wall {
+    background-color: #4c4c47;
+  }
+}

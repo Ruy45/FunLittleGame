@@ -1,0 +1,28 @@
+.shop-wrap {
+  border: 5px white solid;
+  width: 510px;
+  height: 510px;
+  background-color: #4c3535;
+}
+
+.item-grid {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+
+  .swords-row {
+    display: flex;
+    flex-direction: row;
+  }
+
+  .armors-row {
+    display: flex;
+    flex-direction: row;
+  }
+  .helmets-row {
+    display: flex;
+    flex-direction: row;
+  }
+}
