@@ -4,7 +4,6 @@ import scss from "./map.module.scss";
 import { useStores } from "../../stores/RootStore.js";
 import { playerStore } from "../../stores/PlayerStore.js";
 import { observer } from "mobx-react";
-import { renderMonsters } from "../Monster/Monster.jsx";
 import { HealthBar } from "../HealthBar/HealthBar.jsx";
 import { PopUpMenu } from "../PopUpMenu/PopUpMenu.jsx";
 import { useEffect, useState } from "react";
@@ -12,6 +11,7 @@ import { GameOverPopUp } from "../GameOverPopUp/GameOverPopUp.jsx";
 
 export const MapComponent = observer(() => {
   const {
+    monsters,
     playerPosition,
     playerHealth,
     setPlayerPosition,
@@ -21,16 +21,34 @@ export const MapComponent = observer(() => {
     MAP_HEIGHT,
     isPaused,
     setIsPaused,
+    getMonsterByPosition,
   } = useStores();
   const [isPopUpOpen, setIsPopUpOpen] = useState(false);
   const [isGameOverPopUpOpen, setIsGameOverPopUpOpen] = useState(false);
-  const monsters = renderMonsters(MAP_WIDTH);
 
-  useEffect(() => {
-    if (playerHealth <= 0) {
-      setIsGameOverPopUpOpen(true);
+  // useEffect(() => {
+  //   if (playerHealth <= 0) {
+  //     setIsGameOverPopUpOpen(true);
+  //   }
+  // }, [playerHealth]);
+
+  const handleAttack = () => {
+    const attackRange = 1; // Raza de atac în jurul jucătorului
+
+    for (let i = -attackRange; i <= attackRange; i++) {
+      for (let j = -attackRange; j <= attackRange; j++) {
+        const checkX = playerPosition.x + i;
+        const checkY = playerPosition.y + j;
+        const monster = getMonsterByPosition({ x: checkX, y: checkY });
+        if (monster) {
+          monster.health = Math.max(0, monster.health - 20);
+          if (!monster.health) {
+            monsters.delete(monster.id);
+          }
+        }
+      }
     }
-  }, [playerHealth]);
+  };
 
   const handleKeyDown = (event) => {
     let nextX = playerPosition.x;
@@ -49,8 +67,10 @@ export const MapComponent = observer(() => {
       case "d":
         nextX = Math.min(playerPosition.x + 1, MAP_WIDTH - 1);
         break;
+      case "k":
+        handleAttack();
+        break;
       case "Escape":
-        console.log("setPause", isPaused);
         event.preventDefault();
         event.stopPropagation();
         setIsPaused(!isPaused);
@@ -60,7 +80,6 @@ export const MapComponent = observer(() => {
     }
 
     const nextTile = DSMap.data[nextX][nextY];
-    console.log({ nextTile, nextX, nextY });
     if (nextTile >= 30) {
       setPlayerPosition({ x: nextX, y: nextY });
     }
@@ -97,7 +116,6 @@ export const MapComponent = observer(() => {
         onKeyDown={handleKeyDown}
       >
         {map}
-        {monsters}
         <Player position={playerPosition} />
         {isPaused ? <div className={scss["pause-overlay"]}>paused</div> : null}
       </div>

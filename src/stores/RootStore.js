@@ -1,4 +1,4 @@
-import { action, makeObservable, observable } from "mobx";
+import { action, makeAutoObservable, makeObservable, observable } from "mobx";
 import { createContext, useContext } from "react";
 import { DsMap } from "diamond-square-generator";
 import { Monster } from "../class/Monster.js";
@@ -6,9 +6,13 @@ import { cchance } from "../utils/chance.js";
 
 export class RootStore {
   @observable
+  monstersTrajectories = new Map();
+  @observable
   isPaused = false;
   @observable
-  monsters = [];
+  isAttackKeyPressed = false;
+  @observable
+  monsters = observable.map();
   @observable
   MAP_WIDTH = 18;
   @observable
@@ -27,18 +31,49 @@ export class RootStore {
   constructor() {
     makeObservable(this);
     this.genMap();
-    this.spawnMonsters(5);
+    this.spawnMonsters(2);
   }
 
   @action spawnMonsters = (count) => {
     for (let i = 0; i < count; i++) {
-      this.monsters.push(
-        new Monster(cchance.name(), {
-          x: cchance.integer({ min: 0, max: this.MAP_HEIGHT - 1 }),
-          y: cchance.integer({ min: 0, max: this.MAP_WIDTH - 1 }),
-        }),
-      );
+      let monsterName = cchance.name().substring(0, 5);
+      const monster = new Monster(monsterName, {
+        x: cchance.integer({ min: 0, max: this.MAP_HEIGHT - 1 }),
+        y: cchance.integer({ min: 0, max: this.MAP_WIDTH - 1 }),
+      });
+
+      makeObservable(monster, { position: true });
+      this.monsters.set(monster.id, monster);
     }
+  };
+
+  @action moveMonster = () => {
+    Array.from(this.monsters.values()).forEach((monster) => {
+      const deltaX = cchance.pickone([-1, 0, 1]);
+      const deltaY = cchance.pickone([-1, 0, 1]);
+
+      let nextX = monster.position.x + deltaX;
+      let nextY = monster.position.y + deltaY;
+
+      if (
+        nextX >= 0 &&
+        nextX < this.MAP_WIDTH &&
+        nextY >= 0 &&
+        nextY < this.MAP_HEIGHT
+      ) {
+        monster.position = { x: nextX, y: nextY };
+      }
+      if (
+        (monster.position.x === this.playerPosition.x &&
+          monster.position.y === this.playerPosition.y) ||
+        (Math.abs(this.playerPosition.x - monster.position.x) === 1 &&
+          this.playerPosition.y === monster.position.y) ||
+        (Math.abs(this.playerPosition.y - monster.position.y) === 1 &&
+          this.playerPosition.x === monster.position.x)
+      ) {
+        this.setPlayerHealth(Math.max(0, this.playerHealth - 5));
+      }
+    });
   };
 
   @action genMap = () => {
@@ -57,7 +92,7 @@ export class RootStore {
   };
 
   getMonsterByPosition = (position) => {
-    return this.monsters.find(
+    return Array.from(this.monsters.values()).find(
       (monster) =>
         monster.position.x === position.x && monster.position.y === position.y,
     );
@@ -65,6 +100,10 @@ export class RootStore {
 
   @action setIsPaused = (isPaused) => {
     this.isPaused = isPaused;
+  };
+
+  @action setIsAttackKeyPressed = (isAttackKeyPressed) => {
+    this.isAttackKeyPressed = isAttackKeyPressed;
   };
 
   @action setPlayerHealth = (health) => {
@@ -82,6 +121,16 @@ export class RootStore {
   @action setCurrentPage = (currentPage) => {
     this.currentPage = currentPage;
   };
+
+  @action tick = () => {
+    if (this.isPaused) {
+      return;
+    }
+    this.moveMonster();
+  };
+
+  @observable
+  gameLoop = setInterval(this.tick, 500);
 }
 
 export const rootStore = new RootStore();

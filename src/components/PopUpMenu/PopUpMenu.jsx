@@ -10,7 +10,7 @@ export const PopUpMenu = () => {
   return (
     <div autoCapitalize="pop-up-menu">
       <Popup
-        trigger={<div className="button">Menu</div>}
+        trigger={<div className={scss["button"]}>Menu</div>}
         open={isPaused}
         onClose={() => setIsPaused(false)}
       >
