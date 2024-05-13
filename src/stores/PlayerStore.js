@@ -1,6 +1,7 @@
 import { createContext, useContext } from "react";
 import { action, makeObservable, observable } from "mobx";
 import emptyImage from "../assets/empty.png";
+import { ITEM_TYPES } from "../class/Item.js";
 
 export class PlayerStore {
   @observable
@@ -44,12 +45,16 @@ export class PlayerStore {
 
   @action addItemToInventory = (item) => {
     console.log("add to inventory");
-    if (item.name.include("sword")) {
-      this.currentSword = item;
-    } else if (item.name.include("helmet")) {
-      this.currentHelmet = item;
-    } else if (item.name.include("armor")) {
-      this.currentArmor = item;
+    switch (item.type) {
+      case ITEM_TYPES.ARMOR:
+        this.setCurrentArmor(item);
+        break;
+      case ITEM_TYPES.HELMET:
+        this.setCurrentHelmet(item);
+        break;
+      case ITEM_TYPES.SWORD:
+        this.setCurrentSword(item);
+        break;
     }
   };
 }
@@ -60,7 +65,7 @@ export const playerStore = new PlayerStore();
 export const PlayerStoreContext = createContext(playerStore);
 
 //Hook used for providing access to the RootStore throughout the frontend.
-export const useStores = () => {
+export const usePlayerStore = () => {
   const store = useContext(PlayerStoreContext);
   if (!store) {
     throw new Error("RootStore is null.");

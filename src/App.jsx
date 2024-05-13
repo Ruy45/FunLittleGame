@@ -5,9 +5,11 @@ import { useStores } from "./stores/RootStore.js";
 import { StartMenu } from "./components/StartMenu/StartMenu.jsx";
 import { Shop } from "./components/Shop/Shop.jsx";
 import { Inventory } from "./components/Inventory/Inventory.jsx";
+import { usePlayerStore } from "./stores/PlayerStore.js";
 
 export const App = observer(() => {
   const { currentPage } = useStores();
+  const { currentSword, currentArmor, currentHelmet } = usePlayerStore();
 
   switch (currentPage) {
     case "menu": {
@@ -34,7 +36,11 @@ export const App = observer(() => {
     case "inventory": {
       return (
         <Provider value={useStores()}>
-          <Inventory />
+          <Inventory
+            currentHelmet={currentHelmet}
+            currentArmor={currentArmor}
+            currentSword={currentSword}
+          />
         </Provider>
       );
     }

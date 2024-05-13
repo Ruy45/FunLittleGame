@@ -27,6 +27,8 @@ export class RootStore {
   playerPosition = { x: 0, y: 0 };
   @observable
   currentPage = "game";
+  @observable
+  items = observable.map();
 
   constructor() {
     makeObservable(this);

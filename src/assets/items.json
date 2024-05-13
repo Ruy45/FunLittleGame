@@ -1,0 +1,92 @@
+[
+  {
+    "name": "Sword1",
+    "price": 10,
+    "image": "sword1.png",
+    "type": "sword"
+  },
+  {
+    "name": "Sword2",
+    "price": 10,
+    "image": "sword2.png",
+    "type": "sword"
+  },
+  {
+    "name": "Sword3",
+    "price": 10,
+    "image": "sword3.png",
+    "type": "sword"
+  },
+  {
+    "name": "Sword4",
+    "price": 10,
+    "image": "sword4.png",
+    "type": "sword"
+  },
+  {
+    "name": "Sword5",
+    "price": 10,
+    "image": "sword5.png",
+    "type": "sword"
+  },
+  {
+    "name": "Helmet1",
+    "price": 12,
+    "image": "helmet1.png",
+    "type": "helmet"
+  },
+  {
+    "name": "Helmet2",
+    "price": 15,
+    "image": "helmet2.png",
+    "type": "helmet"
+  },
+  {
+    "name": "Helmet3",
+    "price": 15,
+    "image": "helmet3.png",
+    "type": "helmet"
+  },
+  {
+    "name": "Helmet4",
+    "price": 15,
+    "image": "helmet4.png",
+    "type": "helmet"
+  },
+  {
+    "name": "Helmet5",
+    "price": 15,
+    "image": "helmet5.png",
+    "type": "helmet"
+  },
+  {
+    "name": "Armor1",
+    "price": 17,
+    "image": "armor1.png",
+    "type": "armor"
+  },
+  {
+    "name": "Armor2",
+    "price": 17,
+    "image": "armor2.png",
+    "type": "armor"
+  },
+  {
+    "name": "Armor3",
+    "price": 17,
+    "image": "armor3.png",
+    "type": "armor"
+  },
+  {
+    "name": "Armor4",
+    "price": 17,
+    "image": "armor4.png",
+    "type": "armor"
+  },
+  {
+    "name": "Armor5",
+    "price": 17,
+    "image": "armor5.png",
+    "type": "armor"
+  }
+]

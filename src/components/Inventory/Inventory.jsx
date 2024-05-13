@@ -12,7 +12,14 @@ export const Inventory = ({
 
   return (
     <div>
-      <img src={profilePic} alt="pic" className={scss["profile-image"]} />
+      <div className={scss["items-grid"]}>
+        <img src={profilePic} alt="pic" className={scss["profile-image"]} />
+        <div className={scss["current-items"]}>
+          <img src={currentHelmet} alt="helmet" />
+          <img src={currentArmor} alt="armor" />
+          <img src={currentSword} alt="Sword" />
+        </div>
+      </div>
       <button
         className={scss["back"]}
         onClick={() => rootStore.setCurrentPage("game")}
