@@ -1,10 +1,23 @@
 import scss from "./item.module.scss";
 import cn from "classnames";
 
-export const Item = ({ name, image, price, type, isSelected, onClick }) => {
+export const Item = ({
+  name,
+  image,
+  price,
+  type,
+  isSelected,
+  onClick,
+  styleType,
+}) => {
   return (
     <div
-      className={cn(scss["item"], { [scss["selected"]]: isSelected })}
+      className={cn(
+        styleType === "inventory" ? scss["inventory-item"] : scss["shop-item"],
+        {
+          [scss["selected"]]: isSelected,
+        },
+      )}
       onClick={onClick}
     >
       <p className={scss["item-name"]}>{name}</p>

@@ -36,11 +36,7 @@ export const App = observer(() => {
     case "inventory": {
       return (
         <Provider value={useStores()}>
-          <Inventory
-            currentHelmet={currentHelmet}
-            currentArmor={currentArmor}
-            currentSword={currentSword}
-          />
+          <Inventory />
         </Provider>
       );
     }

@@ -7,7 +7,6 @@ import costume2 from "../assets/Costumes/costume2.png";
 import costume3 from "../assets/Costumes/costume3.png";
 import costume4 from "../assets/Costumes/costume4.png";
 import costume5 from "../assets/Costumes/costume5.png";
-import { element } from "prop-types";
 import { Item } from "../class/Item.js";
 
 export class ItemStore {
@@ -25,6 +24,7 @@ export class ItemStore {
     itemsJson
       .map((item) => new Item(item.name, item.price, item.image, item.type))
       .map((item) => this.items.set(item.id, item));
+    console.log(Array.from(this.items.values()));
   }
 }
 

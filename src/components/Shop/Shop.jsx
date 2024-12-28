@@ -36,6 +36,7 @@ export const Shop = observer(() => {
                   setSelectedItem(item);
                 }}
                 isSelected={item.name === selectedItem?.name}
+                styleType={"shop"}
               />
             ))}
         </div>

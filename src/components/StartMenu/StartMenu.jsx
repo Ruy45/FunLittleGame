@@ -2,10 +2,13 @@ import scss from "./start-menu.module.scss";
 import { rootStore, useStores } from "../../stores/RootStore.js";
 import { observer } from "mobx-react";
 import { useState } from "react";
+import { playerStore, usePlayerStore } from "../../stores/PlayerStore.js";
 
 export const StartMenu = observer(() => {
-  const { currentPage, setCurrentPage } = useStores();
-  const { username, setUsername } = useStores();
+  const { setCurrentPage, monsters, genMap, spawnMonsters, monstersNumber } =
+    useStores();
+
+  const { setUsername } = usePlayerStore();
   const [gameStarted, setGameStarted] = useState(false);
 
   const handleInputChange = (e) => {
@@ -13,20 +16,14 @@ export const StartMenu = observer(() => {
   };
 
   const handleNewGameClick = () => {
-    let element = document.getElementById("continue-button");
-    let hidden = element.getAttribute("hidden");
-
-    if (!hidden) {
-      element.removeAttribute("hidden");
-    } else {
-      element.setAttribute("hidden", "hidden");
-    }
-
     rootStore.setPlayerPosition({ x: 0, y: 0 });
     setGameStarted(true);
     setCurrentPage("game");
-    rootStore.setPlayerHealth(100);
-    rootStore.genMap();
+    playerStore.setMoney(200);
+    playerStore.setPlayerHealth(100);
+    monsters.clear();
+    genMap();
+    spawnMonsters(monstersNumber);
   };
 
   return (
@@ -48,6 +45,7 @@ export const StartMenu = observer(() => {
           New Game
         </button>
         <button
+          type="submit"
           id="continue-button"
           className={scss["continue-button"]}
           onClick={() => setCurrentPage("game")}

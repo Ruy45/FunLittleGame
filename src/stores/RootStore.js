@@ -3,8 +3,11 @@ import { createContext, useContext } from "react";
 import { DsMap } from "diamond-square-generator";
 import { Monster } from "../class/Monster.js";
 import { cchance } from "../utils/chance.js";
+import { playerStore } from "./PlayerStore.js";
 
 export class RootStore {
+  @observable
+  monstersNumber = 5;
   @observable
   monstersTrajectories = new Map();
   @observable
@@ -14,15 +17,11 @@ export class RootStore {
   @observable
   monsters = observable.map();
   @observable
-  MAP_WIDTH = 18;
+  MAP_WIDTH = 20;
   @observable
-  MAP_HEIGHT = 18;
+  MAP_HEIGHT = 20;
   @observable
   DSMap = {};
-  @observable
-  playerHealth = 100;
-  @observable
-  username = "Guest";
   @observable
   playerPosition = { x: 0, y: 0 };
   @observable
@@ -33,7 +32,7 @@ export class RootStore {
   constructor() {
     makeObservable(this);
     this.genMap();
-    this.spawnMonsters(2);
+    this.spawnMonsters(this.monstersNumber);
   }
 
   @action spawnMonsters = (count) => {
@@ -73,7 +72,7 @@ export class RootStore {
         (Math.abs(this.playerPosition.y - monster.position.y) === 1 &&
           this.playerPosition.x === monster.position.x)
       ) {
-        this.setPlayerHealth(Math.max(0, this.playerHealth - 5));
+        playerStore.setPlayerHealth(Math.max(0, playerStore.playerHealth - 5));
       }
     });
   };
@@ -100,16 +99,16 @@ export class RootStore {
     );
   };
 
+  @action setMonstersNumber = (monstersNumber) => {
+    this.monstersNumber = monstersNumber;
+  };
+
   @action setIsPaused = (isPaused) => {
     this.isPaused = isPaused;
   };
 
   @action setIsAttackKeyPressed = (isAttackKeyPressed) => {
     this.isAttackKeyPressed = isAttackKeyPressed;
-  };
-
-  @action setPlayerHealth = (health) => {
-    this.playerHealth = health;
   };
 
   @action setUsername = (username) => {
