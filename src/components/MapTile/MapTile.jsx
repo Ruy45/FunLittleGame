@@ -12,26 +12,30 @@ const heightThresholds = (height, x, y) => {
   if (height < 30) {
     return "water";
   }
-  if (height < 35) {
+  if (height < 80) {
     return "beach";
   }
-  if (height < 70) {
+  if (height < 100) {
     return "grass";
   }
   return "wall";
 };
 
 export const MapTile = observer(({ height, x, y }) => {
-  const { getMonsterByPosition, monsters, MAP_HEIGHT } = useStores();
+  const { monsters, MAP_HEIGHT, cameraPosition } = useStores();
   const monster = Array.from(monsters.values()).find(
     (monster) => monster.position.x === x && monster.position.y === y,
   );
+
   return (
     <div className={cn(scss["map-tile"], scss[heightThresholds(height, x, y)])}>
       {monster ? (
         <div className={scss["monster"]}>
           <Monster
-            position={monster.position}
+            position={{
+              x: monster.position.y - cameraPosition.x,
+              y: monster.position.x - cameraPosition.y,
+            }}
             monsterName={monster.name}
             monsterHealth={monster.health}
           />

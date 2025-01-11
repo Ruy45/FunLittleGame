@@ -4,10 +4,9 @@ import { DsMap } from "diamond-square-generator";
 import { Monster } from "../class/Monster.js";
 import { cchance } from "../utils/chance.js";
 import { playerStore } from "./PlayerStore.js";
+import { Noise } from "noisejs";
 
 export class RootStore {
-  @observable
-  monstersNumber = 5;
   @observable
   monstersTrajectories = new Map();
   @observable
@@ -17,13 +16,19 @@ export class RootStore {
   @observable
   monsters = observable.map();
   @observable
-  MAP_WIDTH = 20;
+  MAP_WIDTH = 150;
   @observable
-  MAP_HEIGHT = 20;
+  MAP_HEIGHT = 150;
+  @observable
+  monstersNumber = this.MAP_WIDTH / 4;
   @observable
   DSMap = {};
   @observable
   playerPosition = { x: 0, y: 0 };
+  @observable
+  cameraPosition = { x: 0, y: 0 };
+  @observable
+  cameraRadius = 20;
   @observable
   currentPage = "game";
   @observable
@@ -64,32 +69,51 @@ export class RootStore {
       ) {
         monster.position = { x: nextX, y: nextY };
       }
+
       if (
-        (monster.position.x === this.playerPosition.x &&
-          monster.position.y === this.playerPosition.y) ||
-        (Math.abs(this.playerPosition.x - monster.position.x) === 1 &&
-          this.playerPosition.y === monster.position.y) ||
-        (Math.abs(this.playerPosition.y - monster.position.y) === 1 &&
-          this.playerPosition.x === monster.position.x)
+        (monster.position.x === this.playerPosition.y &&
+          monster.position.y === this.playerPosition.x) ||
+        (Math.abs(this.playerPosition.x - monster.position.y) === 1 &&
+          this.playerPosition.y === monster.position.x) ||
+        (Math.abs(this.playerPosition.y - monster.position.x) === 1 &&
+          this.playerPosition.x === monster.position.y)
       ) {
         playerStore.setPlayerHealth(Math.max(0, playerStore.playerHealth - 5));
       }
+
+      // if (
+      //   (monster.position.x === this.playerPosition.x &&
+      //     monster.position.y === this.playerPosition.y) ||
+      //   (Math.abs(this.playerPosition.x - monster.position.x) === 1 &&
+      //     this.playerPosition.y === monster.position.y) ||
+      //   (Math.abs(this.playerPosition.y - monster.position.y) === 1 &&
+      //     this.playerPosition.x === monster.position.x)
+      // ) {
+      //   playerStore.setPlayerHealth(Math.max(0, playerStore.playerHealth - 5));
+      // }
     });
   };
 
-  @action genMap = () => {
-    const height = 100; // Max height of the map
-    const roughness = 100; // Base roughness of the map
+  @action
+  genMap = () => {
+    let noise = new Noise(Math.random());
 
-    const DSMap = new DsMap(5, {
-      height,
-      roughness,
-    });
+    this.DSMap = {
+      data: Array.from({ length: this.MAP_WIDTH }, () =>
+        Array(this.MAP_HEIGHT).fill(0),
+      ),
+    };
 
-    DSMap.calculate();
-    DSMap.normalize(80);
+    for (let x = 0; x < this.MAP_WIDTH; x++) {
+      for (let y = 0; y < this.MAP_HEIGHT; y++) {
+        const value = noise.simplex2(x / 80, y / 80);
 
-    this.DSMap = DSMap;
+        const normalizedValue = Math.floor((value + 1) * 64);
+        console.log("Height value:", normalizedValue);
+
+        this.DSMap.data[x][y] = normalizedValue;
+      }
+    }
   };
 
   getMonsterByPosition = (position) => {
@@ -117,6 +141,10 @@ export class RootStore {
 
   @action setPlayerPosition = (playerPosition) => {
     this.playerPosition = playerPosition;
+  };
+
+  @action setCameraPosition = (cameraPosition) => {
+    this.cameraPosition = cameraPosition;
   };
 
   @action setCurrentPage = (currentPage) => {

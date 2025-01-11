@@ -20,6 +20,9 @@ export const MapComponent = observer(() => {
     isPaused,
     setIsPaused,
     getMonsterByPosition,
+    cameraPosition,
+    cameraRadius,
+    setCameraPosition,
   } = useStores();
 
   const { playerHealth, setPlayerHealth, username } = usePlayerStore();
@@ -33,12 +36,12 @@ export const MapComponent = observer(() => {
   // }, [playerHealth]);
 
   const handleAttack = () => {
-    const attackRange = 1; // Raza de atac în jurul jucătorului
+    const attackRange = 1;
 
     for (let i = -attackRange; i <= attackRange; i++) {
       for (let j = -attackRange; j <= attackRange; j++) {
-        const checkX = playerPosition.x + i;
-        const checkY = playerPosition.y + j;
+        const checkX = playerPosition.y + i;
+        const checkY = playerPosition.x + j;
         const monster = getMonsterByPosition({ x: checkX, y: checkY });
         if (monster) {
           monster.health = Math.max(0, monster.health - 10);
@@ -81,18 +84,50 @@ export const MapComponent = observer(() => {
     }
 
     const nextTile = DSMap.data[nextX][nextY];
-    if (nextTile >= 30) {
-      setPlayerPosition({ x: nextX, y: nextY });
+    // if (nextTile < 30) {
+    //   return;
+    // }
+
+    if (nextX > MAP_WIDTH || nextY > MAP_HEIGHT || nextX < 0 || nextY < 0) {
+      console.log("Out of bounds.");
+      return;
     }
+
+    if (
+      cameraPosition.x + cameraRadius > MAP_HEIGHT ||
+      cameraPosition.y + cameraRadius > MAP_WIDTH ||
+      cameraPosition.x < 0 ||
+      cameraPosition.y < 0
+    ) {
+      console.log("Camera out of bounds.");
+      return;
+    }
+
+    if (nextX >= cameraPosition.x + cameraRadius) {
+      setCameraPosition({ x: cameraPosition.x + 1, y: cameraPosition.y });
+    } else if (nextY >= cameraPosition.y + cameraRadius) {
+      setCameraPosition({ x: cameraPosition.x, y: cameraPosition.y + 1 });
+    } else if (nextX < cameraPosition.x) {
+      setCameraPosition({ x: cameraPosition.x - 1, y: cameraPosition.y });
+    } else if (nextY < cameraPosition.y) {
+      setCameraPosition({ x: cameraPosition.x, y: cameraPosition.y - 1 });
+    }
+
+    setPlayerPosition({ x: nextX, y: nextY });
+    //console.log("playerPos", playerPosition.x, playerPosition.y);
+    //console.log("cameraPos", cameraPosition.x, cameraPosition.y);
   };
 
   const map = [];
 
-  for (let i = 0; i < MAP_HEIGHT; i++) {
+  for (let i = cameraPosition.y; i < cameraPosition.y + cameraRadius; i++) {
     const row = [];
-    for (let j = 0; j < MAP_WIDTH; j++) {
+    for (let j = cameraPosition.x; j < cameraPosition.x + cameraRadius; j++) {
+      // if (i < 0 || j < 0) {
+      //   console.log(i, j);
+      // }
       row.push(
-        <MapTile key={`tile${j}`} height={DSMap.data[j][i]} x={i} y={j} />,
+        <MapTile key={`tile${j}`} height={DSMap.data[i][j]} x={i} y={j} />,
       );
     }
     map.push(
@@ -118,14 +153,19 @@ export const MapComponent = observer(() => {
       <div
         className={scss["map-container"]}
         style={{
-          width: `calc(${MAP_WIDTH} * 30px)`,
-          height: `calc(${MAP_HEIGHT} * 30px)`,
+          width: `calc(${cameraRadius} * 30px)`,
+          height: `calc(${cameraRadius} * 30px)`,
         }}
         tabIndex="0"
         onKeyDown={handleKeyDown}
       >
         {map}
-        <Player position={playerPosition} />
+        <Player
+          position={{
+            x: playerPosition.x - cameraPosition.x,
+            y: playerPosition.y - cameraPosition.y,
+          }}
+        />
         {isPaused ? <div className={scss["pause-overlay"]}>paused</div> : null}
       </div>
     </div>
